@@ -1,0 +1,11 @@
+[build]
+  publish = "."
+
+[functions]
+  node_bundler = "esbuild"
+
+[[plugins]]
+  package = "@netlify/plugin-cron"
+
+[blobs]
+  enabled = true

@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal Times — Media. News. Impact.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Barlow+Condensed:wght@300;400;500;600;700;800&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--red:#C8102E;--red-deep:#900020;--black:#080808;--dark:#111111;--mid:#1a1a1a;--border:#242424;--border-light:#333;--text:#E5DDD4;--muted:#777;--white:#FFFFFF;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--black);color:var(--text);font-family:'Barlow',sans-serif;font-weight:300;overflow-x:hidden;cursor:none;}
+.cur{position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+.cur-dot{width:8px;height:8px;background:var(--red);border-radius:50%;}
+.cur-ring{width:32px;height:32px;border:1px solid rgba(200,16,46,0.6);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width 0.25s,height 0.25s,border-color 0.25s;}
+body *{cursor:none;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:0.022;pointer-events:none;z-index:500;}
+
+/* TOPBAR */
+.topbar{background:var(--red);height:36px;display:flex;align-items:center;justify-content:space-between;padding:0 48px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;}
+.topbar-left{display:flex;align-items:center;gap:16px;overflow:hidden;flex:1;}
+.topbar-badge{background:rgba(0,0,0,0.25);padding:4px 12px;font-weight:700;font-size:10px;letter-spacing:0.3em;color:#fff;white-space:nowrap;}
+.ticker-wrap{overflow:hidden;flex:1;}
+.ticker-inner{display:flex;gap:64px;animation:ticker 28s linear infinite;white-space:nowrap;}
+@keyframes ticker{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+.ticker-inner span{color:rgba(255,255,255,0.82);}
+.ticker-inner span::before{content:'◆  ';font-size:7px;opacity:0.6;}
+.topbar-right{display:flex;gap:24px;white-space:nowrap;}
+.topbar-right a{color:rgba(255,255,255,0.7);text-decoration:none;transition:color 0.2s;}
+.topbar-right a:hover{color:#fff;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:800;height:72px;background:rgba(8,8,8,0.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 48px;}
+.nav-logo{display:flex;align-items:center;gap:14px;text-decoration:none;}
+.nav-logo-img{width:42px;height:42px;border-radius:7px;overflow:hidden;flex-shrink:0;background:var(--red);}
+.nav-logo-img svg{width:100%;height:100%;}
+.nav-brand-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;letter-spacing:0.1em;text-transform:uppercase;color:#fff;display:block;line-height:1.1;}
+.nav-brand-sub{font-family:'Barlow Condensed',sans-serif;font-weight:400;font-size:9.5px;letter-spacing:0.45em;text-transform:uppercase;color:var(--red);display:block;margin-top:1px;}
+.nav-links{display:flex;list-style:none;}
+.nav-links li a{display:block;padding:0 18px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color 0.2s;height:72px;line-height:72px;border-right:1px solid var(--border);position:relative;}
+.nav-links li:first-child a{border-left:1px solid var(--border);}
+.nav-links li a::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--red);transform:scaleX(0);transition:transform 0.3s;}
+.nav-links li a:hover{color:#fff;}
+.nav-links li a:hover::after{transform:scaleX(1);}
+.nav-right{display:flex;align-items:center;gap:14px;}
+.btn-outline{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--text);border:1px solid var(--border-light);padding:9px 22px;text-decoration:none;transition:all 0.2s;}
+.btn-outline:hover{border-color:var(--red);color:#fff;}
+.btn-red{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:#fff;background:var(--red);padding:10px 24px;text-decoration:none;transition:background 0.2s;}
+.btn-red:hover{background:var(--red-deep);}
+
+/* HERO — full-width editorial cinematic */
+.hero{min-height:100vh;position:relative;overflow:hidden;display:flex;flex-direction:column;}
+
+/* Cinematic background layers */
+.hero-film{position:absolute;inset:0;z-index:0;}
+/* Dark photographic texture via CSS — city lights / newsroom atmosphere */
+.hero-film::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 60% 30%, rgba(160,8,24,0.38) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 80% at 100% 60%, rgba(100,0,15,0.28) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 0% 80%, rgba(60,0,10,0.22) 0%, transparent 50%),
+    linear-gradient(175deg, #0a0002 0%, #160004 30%, #0d0002 60%, #050001 100%);
+}
+/* Film grain texture */
+.hero-film::after{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
+  opacity:0.055;mix-blend-mode:overlay;
+}
+
+/* Horizontal rule lines — newspaper column feel */
+.hero-rules{position:absolute;inset:0;z-index:1;pointer-events:none;}
+.hero-rules::before{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:linear-gradient(90deg,transparent 0%,rgba(200,16,46,0.12) 20%,rgba(200,16,46,0.12) 80%,transparent 100%);}
+.hero-rules::after{content:'';position:absolute;left:50%;top:0;bottom:0;width:1px;background:linear-gradient(180deg,transparent 0%,rgba(255,255,255,0.04) 20%,rgba(255,255,255,0.04) 80%,transparent 100%);}
+
+/* Date / edition bar — newspaper masthead feel */
+.hero-masthead{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;padding:22px 64px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.hero-masthead-date{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:500;letter-spacing:0.4em;text-transform:uppercase;color:rgba(255,255,255,0.3);}
+.hero-masthead-edition{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:500;letter-spacing:0.4em;text-transform:uppercase;color:rgba(255,255,255,0.3);}
+.hero-masthead-center{display:flex;align-items:center;gap:16px;}
+.hero-masthead-dot{width:4px;height:4px;border-radius:50%;background:var(--red);}
+
+/* Main hero body — editorial grid */
+.hero-body{position:relative;z-index:3;flex:1;display:grid;grid-template-columns:1fr 420px;gap:0;align-items:center;padding:0 64px 0 64px;}
+
+/* Left editorial content */
+.hero-left{display:flex;flex-direction:column;justify-content:center;padding:60px 64px 60px 0;border-right:1px solid rgba(255,255,255,0.06);}
+
+/* Category tag — like a newspaper section label */
+.hero-section-tag{display:inline-flex;align-items:center;gap:10px;margin-bottom:28px;opacity:0;animation:fadeUp 0.7s 0.1s forwards;}
+.hero-tag-bar{width:2px;height:16px;background:var(--red);}
+.hero-tag-text{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.5em;text-transform:uppercase;color:var(--red);}
+
+/* The masthead headline — large, editorial, italic serif */
+h1.hero-h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(52px,5.8vw,88px);
+  line-height:1.02;
+  font-weight:900;
+  color:#fff;
+  margin-bottom:0;
+  opacity:0;
+  animation:fadeUp 0.8s 0.22s forwards;
+  letter-spacing:-0.01em;
+}
+h1.hero-h1 .line1{display:block;}
+h1.hero-h1 .line2{display:block;font-style:italic;color:rgba(255,255,255,0.88);}
+h1.hero-h1 em{font-style:italic;color:var(--red);}
+
+/* Editorial rule under headline */
+.hero-rule{width:100%;height:1px;background:linear-gradient(90deg,var(--red) 0%,rgba(200,16,46,0.2) 40%,transparent 100%);margin:24px 0;opacity:0;animation:fadeUp 0.6s 0.38s forwards;}
+
+.hero-p{font-family:'Barlow',sans-serif;font-size:16px;line-height:1.8;color:rgba(229,221,212,0.62);max-width:520px;margin-bottom:38px;opacity:0;animation:fadeUp 0.7s 0.45s forwards;font-weight:300;}
+.hero-p strong{color:var(--text);font-weight:400;}
+
+.hero-btns{display:flex;align-items:center;gap:18px;opacity:0;animation:fadeUp 0.7s 0.58s forwards;}
+.hero-divider{width:1px;height:38px;background:var(--border-light);}
+
+/* Stats row — editorial column feel */
+.hero-stats{
+  display:flex;gap:0;margin-top:52px;padding-top:36px;
+  border-top:1px solid rgba(255,255,255,0.07);
+  opacity:0;animation:fadeUp 0.7s 0.7s forwards;
+}
+.hero-stat{padding:0 36px 0 0;border-right:1px solid rgba(255,255,255,0.07);margin-right:36px;}
+.hero-stat:last-child{border-right:none;padding-right:0;margin-right:0;}
+.stat-num{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:800;color:#fff;line-height:1;}
+.stat-num span{color:var(--red);}
+.stat-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:var(--muted);margin-top:4px;}
+
+/* Right globe panel */
+.hero-right{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:60px 0 60px 56px;gap:28px;
+}
+.hero-globe-wrap{position:relative;display:flex;align-items:center;justify-content:center;width:340px;height:340px;}
+.hero-globe-glow{position:absolute;inset:-40px;border-radius:50%;background:radial-gradient(circle,rgba(200,16,46,0.2) 0%,transparent 68%);}
+.globe{
+  width:300px;height:300px;border-radius:50%;
+  background:radial-gradient(circle at 32% 28%,rgba(220,40,60,0.6) 0%,rgba(120,5,20,0.88) 38%,rgba(10,1,3,0.97) 78%);
+  box-shadow:0 0 64px rgba(200,16,46,0.26),0 0 120px rgba(200,16,46,0.1),inset 0 0 40px rgba(0,0,0,0.5);
+  position:relative;animation:globePulse 6s ease-in-out infinite;
+}
+.globe::before{content:'';position:absolute;inset:0;border-radius:50%;background:repeating-linear-gradient(0deg,transparent,transparent 16px,rgba(200,16,46,0.05) 16px,rgba(200,16,46,0.05) 17px),repeating-linear-gradient(90deg,transparent,transparent 16px,rgba(200,16,46,0.05) 16px,rgba(200,16,46,0.05) 17px);}
+.globe::after{content:'';position:absolute;inset:0;border-radius:50%;border:1px solid rgba(200,16,46,0.16);}
+/* Rotating longitude ring */
+.globe-ring{position:absolute;inset:-8px;border-radius:50%;border:1px dashed rgba(200,16,46,0.1);animation:spin 18s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes globePulse{0%,100%{box-shadow:0 0 64px rgba(200,16,46,0.26),0 0 120px rgba(200,16,46,0.1);}50%{box-shadow:0 0 90px rgba(200,16,46,0.38),0 0 160px rgba(200,16,46,0.14);}}
+.globe-dot{position:absolute;top:22%;right:26%;width:12px;height:12px;background:rgba(255,255,255,0.8);border-radius:50%;box-shadow:0 0 16px rgba(255,255,255,0.5);}
+
+/* Breaking news cards stacked on right */
+.hero-news-stack{display:flex;flex-direction:column;gap:2px;width:100%;}
+.hero-news-item{background:rgba(17,17,17,0.85);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.05);padding:16px 20px;display:flex;align-items:flex-start;gap:12px;transition:background 0.2s,border-color 0.2s;}
+.hero-news-item:hover{background:rgba(26,26,26,0.9);border-color:rgba(200,16,46,0.3);}
+.hni-dot{width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:5px;}
+.hni-cat{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.4em;text-transform:uppercase;color:var(--red);margin-bottom:5px;}
+.hni-title{font-family:'Playfair Display',serif;font-size:13px;line-height:1.45;color:rgba(229,221,212,0.82);}
+
+/* Bottom bar — editorial footer strip */
+.hero-footer-bar{
+  position:relative;z-index:3;
+  display:flex;align-items:stretch;
+  border-top:1px solid rgba(255,255,255,0.06);
+  background:rgba(0,0,0,0.3);
+  backdrop-filter:blur(8px);
+}
+.hfb-item{
+  flex:1;padding:18px 32px;
+  border-right:1px solid rgba(255,255,255,0.05);
+  display:flex;align-items:center;gap:12px;
+}
+.hfb-item:last-child{border-right:none;}
+.hfb-icon{width:28px;height:28px;flex-shrink:0;}
+.hfb-icon svg{width:100%;height:100%;stroke:var(--red);fill:none;stroke-width:1.5;}
+.hfb-label{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.35em;text-transform:uppercase;color:var(--muted);margin-bottom:2px;}
+.hfb-val{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.05em;color:var(--text);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+
+/* SECTION BASICS */
+.section{padding:96px 48px;}
+.sec-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:60px;}
+.sec-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.5em;text-transform:uppercase;color:var(--red);margin-bottom:12px;}
+.sec-title{font-family:'Playfair Display',serif;font-size:clamp(30px,3.2vw,50px);font-weight:900;color:#fff;line-height:1.1;}
+.sec-title em{font-style:italic;color:var(--red);}
+.sec-link{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:10px;transition:color 0.2s;}
+.sec-link::after{content:'→';font-size:16px;}
+.sec-link:hover{color:var(--red);}
+
+/* SERVICES */
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
+.svc{background:var(--dark);padding:42px 34px;position:relative;overflow:hidden;transition:background 0.3s,transform 0.3s;border-top:2px solid transparent;}
+.svc:hover{background:var(--mid);transform:translateY(-4px);border-top-color:var(--red);}
+.svc::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(200,16,46,0.05) 0%,transparent 55%);opacity:0;transition:opacity 0.3s;}
+.svc:hover::before{opacity:1;}
+.svc-num{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.3em;color:var(--red);opacity:0.55;margin-bottom:26px;}
+.svc-icon{width:44px;height:44px;margin-bottom:22px;}
+.svc-icon svg{width:100%;height:100%;stroke:var(--red);fill:none;stroke-width:1.4;}
+.svc-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#fff;margin-bottom:14px;}
+.svc-desc{font-size:13.5px;line-height:1.75;color:var(--muted);}
+.svc-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:22px;}
+.svc-tag{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);border:1px solid var(--border-light);padding:4px 10px;}
+
+/* NEWS */
+.news-section{background:var(--dark);padding:96px 48px;}
+.news-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:2px;}
+.news-feat{background:var(--black);min-height:500px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:44px;}
+.news-feat-bg{position:absolute;inset:0;background:linear-gradient(140deg,#180006 0%,#2c0012 55%,#0e0002 100%);}
+.news-feat-orb{position:absolute;top:-50px;right:-50px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(200,16,46,0.35) 0%,transparent 68%);opacity:0.55;}
+.news-feat-content{position:relative;z-index:1;}
+.news-cat{display:inline-block;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.35em;text-transform:uppercase;color:#fff;background:var(--red);padding:5px 14px;margin-bottom:18px;}
+.news-feat-title{font-family:'Playfair Display',serif;font-size:clamp(22px,2.2vw,34px);font-weight:900;color:#fff;line-height:1.22;margin-bottom:14px;}
+.news-meta{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);}
+.news-side{display:flex;flex-direction:column;gap:2px;}
+.news-card{background:var(--black);padding:26px 30px;flex:1;display:flex;flex-direction:column;justify-content:space-between;transition:background 0.2s,border-left-color 0.2s;border-left:2px solid transparent;}
+.news-card:hover{background:var(--mid);border-left-color:var(--red);}
+.news-card-cat{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.35em;text-transform:uppercase;color:var(--red);margin-bottom:9px;}
+.news-card-title{font-family:'Playfair Display',serif;font-size:15px;line-height:1.5;color:var(--text);}
+.news-card-meta{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-top:12px;}
+
+/* WHY */
+.why-section{padding:96px 48px;background:var(--black);position:relative;overflow:hidden;}
+.why-section::before{content:'';position:absolute;top:0;right:0;width:560px;height:560px;background:radial-gradient(circle,rgba(200,16,46,0.07) 0%,transparent 70%);pointer-events:none;}
+.why-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+.why-visual{display:flex;align-items:center;justify-content:center;}
+.why-logo-wrap{width:380px;height:380px;position:relative;display:flex;align-items:center;justify-content:center;}
+.ring{position:absolute;border-radius:50%;border:1px solid;}
+.ring-1{inset:0;border-color:rgba(200,16,46,0.1);animation:spin 44s linear infinite;}
+.ring-2{inset:12%;border-color:rgba(200,16,46,0.07);animation:spin 30s linear infinite reverse;}
+.ring-3{inset:24%;border-color:rgba(200,16,46,0.13);animation:spin 20s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.why-center-globe{width:200px;height:200px;border-radius:50%;background:radial-gradient(circle at 33% 28%,rgba(210,30,50,0.65) 0%,rgba(110,5,18,0.9) 44%,rgba(10,1,3,0.98) 78%);display:flex;align-items:center;justify-content:center;box-shadow:0 0 56px rgba(200,16,46,0.24),0 0 100px rgba(200,16,46,0.09);position:relative;z-index:1;}
+.why-center-globe::before{content:'';position:absolute;inset:0;border-radius:50%;background:repeating-linear-gradient(0deg,transparent,transparent 14px,rgba(200,16,46,0.06) 14px,rgba(200,16,46,0.06) 15px),repeating-linear-gradient(90deg,transparent,transparent 14px,rgba(200,16,46,0.06) 14px,rgba(200,16,46,0.06) 15px);}
+.why-logo-inner{text-align:center;position:relative;z-index:1;}
+.why-logo-inner .s{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;letter-spacing:0.1em;color:#fff;display:block;}
+.why-logo-inner .d{width:24px;height:2px;background:var(--red);margin:5px auto;}
+.why-logo-inner .t{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:400;letter-spacing:0.5em;color:rgba(255,255,255,0.65);display:block;}
+.why-content .sec-title{margin-bottom:0;}
+.why-points{list-style:none;margin-top:36px;}
+.why-point{display:grid;grid-template-columns:36px 1fr;gap:18px;padding:22px 0;border-bottom:1px solid var(--border);}
+.why-point:first-child{border-top:1px solid var(--border);}
+.wp-num{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.15em;color:var(--red);padding-top:3px;}
+.wp-title{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#fff;margin-bottom:6px;}
+.wp-desc{font-size:13.5px;line-height:1.7;color:var(--muted);}
+
+/* ADS CALLOUT */
+.ads-section{background:var(--red);padding:76px 48px;position:relative;overflow:hidden;}
+.ads-section::before{content:'';position:absolute;top:-120px;right:-120px;width:520px;height:520px;background:rgba(0,0,0,0.12);border-radius:50%;}
+.ads-inner{display:grid;grid-template-columns:1fr auto;gap:48px;align-items:center;position:relative;z-index:1;}
+.ads-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.5em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:14px;}
+.ads-title{font-family:'Playfair Display',serif;font-size:clamp(26px,2.8vw,42px);font-weight:900;color:#fff;line-height:1.2;max-width:580px;}
+.ads-title em{font-style:italic;}
+.ads-platforms{display:flex;gap:14px;margin-top:26px;}
+.plat{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.8);background:rgba(0,0,0,0.18);padding:6px 16px;border:1px solid rgba(255,255,255,0.14);}
+.ads-btns{display:flex;flex-direction:column;gap:12px;}
+.btn-white{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:var(--red);background:#fff;padding:14px 32px;text-decoration:none;white-space:nowrap;transition:all 0.2s;text-align:center;}
+.btn-white:hover{background:var(--black);color:#fff;}
+.btn-trans{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.75);text-decoration:none;padding:10px 32px;border:1px solid rgba(255,255,255,0.3);transition:all 0.2s;white-space:nowrap;text-align:center;}
+.btn-trans:hover{color:#fff;border-color:#fff;}
+
+/* PROCESS */
+.process-section{padding:96px 48px;background:var(--dark);}
+.process-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:60px;}
+.proc-step{background:var(--black);padding:38px 30px;position:relative;}
+.proc-step::after{content:'';position:absolute;top:54px;right:-1px;width:1px;height:28px;background:var(--red);}
+.proc-step:last-child::after{display:none;}
+.step-num{font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:800;color:var(--border);line-height:1;margin-bottom:22px;}
+.step-title{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#fff;margin-bottom:12px;}
+.step-desc{font-size:13px;line-height:1.75;color:var(--muted);}
+
+/* TESTIMONIALS */
+.testi-section{padding:96px 48px;background:var(--black);}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:60px;}
+.testi-card{background:var(--dark);padding:38px 34px;border-top:2px solid var(--border);transition:border-top-color 0.3s;}
+.testi-card:hover{border-top-color:var(--red);}
+.testi-q{font-family:'Playfair Display',serif;font-size:15px;line-height:1.82;color:var(--text);font-style:italic;margin-bottom:26px;}
+.testi-q::before{content:'\201C';font-size:44px;line-height:0;vertical-align:-14px;color:var(--red);font-style:normal;margin-right:3px;}
+.testi-author{display:flex;align-items:center;gap:14px;}
+.testi-av{width:38px;height:38px;border-radius:50%;background:var(--mid);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;color:var(--red);flex-shrink:0;}
+.testi-name{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#fff;}
+.testi-role{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);}
+
+/* CONTACT */
+.contact-section{padding:96px 48px;background:var(--dark);}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;margin-top:60px;}
+.contact-desc{font-size:16px;line-height:1.8;color:var(--muted);margin-bottom:38px;}
+.contact-items{display:flex;flex-direction:column;gap:22px;}
+.ci{display:flex;gap:18px;align-items:flex-start;}
+.ci-icon{width:38px;height:38px;background:var(--mid);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ci-icon svg{width:17px;height:17px;stroke:var(--red);fill:none;stroke-width:1.5;}
+.ci-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;color:var(--red);margin-bottom:3px;}
+.ci-val{font-size:14px;color:var(--text);}
+.form{display:flex;flex-direction:column;gap:15px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+.fg{display:flex;flex-direction:column;gap:7px;}
+.flabel{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;color:var(--muted);}
+.finput,.fselect,.ftextarea{background:var(--black);border:1px solid var(--border-light);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;padding:13px 15px;outline:none;transition:border-color 0.2s;width:100%;}
+.finput:focus,.fselect:focus,.ftextarea:focus{border-color:var(--red);}
+.ftextarea{resize:vertical;min-height:118px;}
+.fselect{appearance:none;}
+.fsubmit{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;color:#fff;background:var(--red);border:none;padding:15px 40px;cursor:none;transition:background 0.2s;align-self:flex-start;margin-top:4px;}
+.fsubmit:hover{background:var(--red-deep);}
+
+/* FOOTER */
+footer{background:var(--black);border-top:1px solid var(--border);padding:60px 48px 28px;}
+.footer-top{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:44px;padding-bottom:52px;border-bottom:1px solid var(--border);}
+.footer-logo{display:flex;align-items:center;gap:12px;text-decoration:none;margin-bottom:18px;}
+.footer-logo-img{width:34px;height:34px;border-radius:6px;overflow:hidden;background:var(--red);}
+.footer-logo-img svg{width:100%;height:100%;}
+.footer-logo-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:17px;letter-spacing:0.1em;text-transform:uppercase;color:#fff;display:block;line-height:1.1;}
+.footer-logo-sub{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:0.4em;text-transform:uppercase;color:var(--red);}
+.footer-desc{font-size:13px;line-height:1.8;color:var(--muted);max-width:270px;}
+.fc-title{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;color:#fff;margin-bottom:18px;}
+.fc-links{list-style:none;display:flex;flex-direction:column;gap:11px;}
+.fc-links a{font-size:13px;color:var(--muted);text-decoration:none;transition:color 0.2s;display:flex;align-items:center;gap:8px;}
+.fc-links a::before{content:'';width:10px;height:1px;background:var(--border-light);flex-shrink:0;transition:width 0.2s,background 0.2s;}
+.fc-links a:hover{color:var(--text);}
+.fc-links a:hover::before{width:16px;background:var(--red);}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:26px;}
+.footer-copy{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.15em;color:var(--muted);}
+.footer-copy span{color:var(--red);}
+.footer-legal{display:flex;gap:22px;}
+.footer-legal a{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color 0.2s;}
+.footer-legal a:hover{color:var(--text);}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.reveal.visible{opacity:1;transform:none;}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .hero-body{grid-template-columns:1fr;}
+  .hero-right{display:none;}
+  .hero-left{border-right:none;padding-right:0;}
+  .hero-masthead,.hero-footer-bar{padding-left:24px;padding-right:24px;}
+  .services-grid{grid-template-columns:1fr 1fr;}
+  .news-grid{grid-template-columns:1fr;}
+  .why-grid{grid-template-columns:1fr;}
+  .why-visual{display:none;}
+  .process-steps{grid-template-columns:1fr 1fr;}
+  .testi-grid{grid-template-columns:1fr 1fr;}
+  .contact-grid{grid-template-columns:1fr;}
+  .footer-top{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:768px){
+  nav,.topbar,.section,.news-section,.why-section,.process-section,.testi-section,.contact-section,.ads-section,footer{padding-left:20px;padding-right:20px;}
+  nav{padding-top:0;padding-bottom:0;}
+  .nav-links{display:none;}
+  .hero-left{padding:60px 22px 48px;}
+  .services-grid,.testi-grid,.process-steps,.footer-top{grid-template-columns:1fr;}
+  .ads-inner{grid-template-columns:1fr;}
+  .ads-btns{align-items:flex-start;}
+  .form-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="cur" id="cur"><div class="cur-dot"></div></div>
+<div class="cur-ring" id="curRing"></div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-badge">Breaking</div>
+    <div class="ticker-wrap">
+      <div class="ticker-inner">
+        <span>Signal Times launches global campaign division</span>
+        <span>Meta advertising packages now available</span>
+        <span>New editorial partnerships across 14 markets</span>
+        <span>Campaign production services open for bookings</span>
+        <span>Signal Times launches global campaign division</span>
+        <span>Meta advertising packages now available</span>
+        <span>New editorial partnerships across 14 markets</span>
+        <span>Campaign production services open for bookings</span>
+      </div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <a href="#contact">Contact</a>
+    <a href="#services">Services</a>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-img">
+      <!-- Signal Times globe logo SVG inline -->
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <rect width="200" height="200" fill="#C8102E"/>
+        <!-- Globe rings -->
+        <circle cx="100" cy="96" r="66" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+        <circle cx="100" cy="96" r="44" fill="none" stroke="rgba(255,255,255,0.11)" stroke-width="1"/>
+        <circle cx="100" cy="96" r="22" fill="none" stroke="rgba(255,255,255,0.09)" stroke-width="1"/>
+        <!-- Latitude lines -->
+        <ellipse cx="100" cy="96" rx="66" ry="20" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.7"/>
+        <ellipse cx="100" cy="96" rx="66" ry="42" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="0.7"/>
+        <!-- Longitude -->
+        <ellipse cx="100" cy="96" rx="28" ry="66" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.7"/>
+        <!-- Glow dot -->
+        <circle cx="144" cy="57" r="9" fill="rgba(255,255,255,0.72)"/>
+        <!-- SIGNAL text -->
+        <text x="100" y="148" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="22" font-weight="900" fill="white" letter-spacing="3">SIGNAL</text>
+        <!-- divider -->
+        <line x1="80" y1="156" x2="120" y2="156" stroke="#C8102E" stroke-width="2.5"/>
+        <!-- TIMES text -->
+        <text x="100" y="171" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="rgba(255,255,255,0.78)" letter-spacing="5">TIMES</text>
+      </svg>
+    </div>
+    <div>
+      <span class="nav-brand-name">Signal Times</span>
+      <span class="nav-brand-sub">Media &amp; News</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#news">News</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#process">How It Works</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="#news" class="btn-outline">Read News</a>
+    <a href="#contact" class="btn-red">Get Started</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <!-- Cinematic bg layers -->
+  <div class="hero-film"></div>
+  <div class="hero-rules"></div>
+
+  <!-- Newspaper masthead bar -->
+  <div class="hero-masthead">
+    <span class="hero-masthead-date">Thursday, May 14, 2026</span>
+    <div class="hero-masthead-center">
+      <div class="hero-masthead-dot"></div>
+      <span class="hero-masthead-date" style="letter-spacing:0.5em;">Global Edition</span>
+      <div class="hero-masthead-dot"></div>
+    </div>
+    <span class="hero-masthead-edition">Est. 2024 &nbsp;·&nbsp; Vol. II Issue 134</span>
+  </div>
+
+  <!-- Main editorial grid -->
+  <div class="hero-body">
+    <div class="hero-left">
+      <div class="hero-section-tag">
+        <div class="hero-tag-bar"></div>
+        <span class="hero-tag-text">Global Media &amp; Advertising</span>
+      </div>
+
+      <h1 class="hero-h1">
+        <span class="line1">Where the World</span>
+        <span class="line2">Gets Its <em>Signal.</em></span>
+      </h1>
+
+      <div class="hero-rule"></div>
+
+      <p class="hero-p">Signal Times is a full-service media and advertising powerhouse. We deliver <strong>news, editorial content, Meta &amp; digital ads,</strong> and <strong>campaign production</strong> — everything except the ordinary.</p>
+
+      <div class="hero-btns">
+        <a href="#services" class="btn-red">Explore Services</a>
+        <div class="hero-divider"></div>
+        <a href="#contact" class="btn-outline">Work With Us</a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="stat-num">14<span>+</span></div>
+          <div class="stat-label">Markets Reached</div>
+        </div>
+        <div class="hero-stat">
+          <div class="stat-num">200<span>M+</span></div>
+          <div class="stat-label">Ad Impressions</div>
+        </div>
+        <div class="hero-stat">
+          <div class="stat-num">500<span>+</span></div>
+          <div class="stat-label">Campaigns</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Globe + breaking news -->
+    <div class="hero-right">
+      <div class="hero-globe-wrap">
+        <div class="hero-globe-glow"></div>
+        <div class="globe-ring"></div>
+        <div class="globe"><div class="globe-dot"></div></div>
+      </div>
+      <div class="hero-news-stack">
+        <div class="hero-news-item">
+          <div class="hni-dot"></div>
+          <div>
+            <div class="hni-cat">World</div>
+            <div class="hni-title">Trump &amp; Xi open Beijing summit — Taiwan declared "most important issue" between the two powers</div>
+          </div>
+        </div>
+        <div class="hero-news-item">
+          <div class="hni-dot"></div>
+          <div>
+            <div class="hni-cat">Europe</div>
+            <div class="hni-title">Russia launches mass drone and missile assault on Kyiv — one killed, 31 injured across six districts</div>
+          </div>
+        </div>
+        <div class="hero-news-item">
+          <div class="hni-dot"></div>
+          <div>
+            <div class="hni-cat">Middle East</div>
+            <div class="hni-title">Lebanon &amp; Israel hold direct talks in Washington as Israeli strikes kill 12 in southern Lebanon</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom editorial bar -->
+  <div class="hero-footer-bar">
+    <div class="hfb-item">
+      <div class="hfb-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+      <div><div class="hfb-label">Coverage</div><div class="hfb-val">Digital Advertising</div></div>
+    </div>
+    <div class="hfb-item">
+      <div class="hfb-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg></div>
+      <div><div class="hfb-label">Network</div><div class="hfb-val">14+ Global Markets</div></div>
+    </div>
+    <div class="hfb-item">
+      <div class="hfb-icon"><svg viewBox="0 0 24 24"><path d="M15 10l-4 4-4-4M3 6l9 6 9-6M3 6v12h18V6"/></svg></div>
+      <div><div class="hfb-label">Editorial</div><div class="hfb-val">News &amp; Articles</div></div>
+    </div>
+    <div class="hfb-item">
+      <div class="hfb-icon"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
+      <div><div class="hfb-label">Production</div><div class="hfb-val">Campaign Filming</div></div>
+    </div>
+    <div class="hfb-item">
+      <div class="hfb-icon"><svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg></div>
+      <div><div class="hfb-label">Results</div><div class="hfb-val">500+ Campaigns</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="section" id="services">
+  <div class="sec-header reveal">
+    <div>
+      <div class="sec-eyebrow">What We Do</div>
+      <h2 class="sec-title">Services Built<br>for <em>Real Impact</em></h2>
+    </div>
+    <a href="#contact" class="sec-link">All Services</a>
+  </div>
+  <div class="services-grid">
+    <div class="svc reveal">
+      <div class="svc-num">01</div>
+      <div class="svc-icon"><svg viewBox="0 0 48 48"><rect x="4" y="8" width="40" height="28" rx="2"/><path d="M16 36v4M32 36v4M10 40h28M4 28h40"/></svg></div>
+      <div class="svc-title">Digital Advertising</div>
+      <div class="svc-desc">Performance-driven ad campaigns across Meta, Google, programmatic networks, and premium publishers. We build, manage, and optimize every dollar for measurable results.</div>
+      <div class="svc-tags"><span class="svc-tag">Meta Ads</span><span class="svc-tag">Google</span><span class="svc-tag">Programmatic</span><span class="svc-tag">Display</span></div>
+    </div>
+    <div class="svc reveal">
+      <div class="svc-num">02</div>
+      <div class="svc-icon"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="18"/><path d="M24 6v36M6 24h36M9.5 12.5C14 17 19 19.5 24 19.5s10-2.5 14.5-7M9.5 35.5C14 31 19 28.5 24 28.5s10 2.5 14.5 7"/></svg></div>
+      <div class="svc-title">News &amp; Editorial</div>
+      <div class="svc-desc">Original journalism, breaking news, and editorial content distributed across the Signal Times network and syndicated to global media partners in 14+ markets.</div>
+      <div class="svc-tags"><span class="svc-tag">Breaking News</span><span class="svc-tag">Features</span><span class="svc-tag">Syndication</span></div>
+    </div>
+    <div class="svc reveal">
+      <div class="svc-num">03</div>
+      <div class="svc-icon"><svg viewBox="0 0 48 48"><rect x="4" y="4" width="40" height="40" rx="2"/><path d="M6 36L18 24l8 8 8-10 8 8"/><circle cx="15" cy="15" r="3"/></svg></div>
+      <div class="svc-title">Campaign Production</div>
+      <div class="svc-desc">Full-scale campaign creation from concept to screen. We film, produce, and deliver polished advertising campaigns. Not social media management — pure campaign power.</div>
+      <div class="svc-tags"><span class="svc-tag">Video Production</span><span class="svc-tag">Creative</span><span class="svc-tag">Campaigns</span></div>
+    </div>
+    <div class="svc reveal">
+      <div class="svc-num">04</div>
+      <div class="svc-icon"><svg viewBox="0 0 48 48"><path d="M4 40V28l12-8 8 6 12-12 12 6v20H4zM16 40V28M28 40V22"/></svg></div>
+      <div class="svc-title">Sponsored Content</div>
+      <div class="svc-desc">Native advertising and premium brand features published inside Signal Times editorial. Reach engaged, loyal audiences through trusted journalism and editorial credibility.</div>
+      <div class="svc-tags"><span class="svc-tag">Native Ads</span><span class="svc-tag">Sponsored</span><span class="svc-tag">Editorial</span></div>
+    </div>
+    <div class="svc reveal">
+      <div class="svc-num">05</div>
+      <div class="svc-icon"><svg viewBox="0 0 48 48"><rect x="4" y="8" width="40" height="32" rx="2"/><path d="M8 16h32M8 24h24M8 32h16"/></svg></div>
+      <div class="svc-title">Articles &amp; Content</div>
+      <div class="svc-desc">Strategic editorial content, thought leadership articles, and media placement. We craft narratives that move markets and minds — written, placed, and amplified.</div>
+      <div class="svc-tags"><span class="svc-tag">Articles</span><span class="svc-tag">PR Content</span><span class="svc-tag">Strategy</span></div>
+    </div>
+    <div class="svc reveal">
+      <div class="svc-num">06</div>
+      <div class="svc-icon"><svg viewBox="0 0 48 48"><path d="M24 4l5 10 11 1.6-8 7.8 1.9 11L24 29l-9.9 5.4L16 23.4 8 15.6 19 14z"/><path d="M24 29v15M17 36l7 8 7-8"/></svg></div>
+      <div class="svc-title">Media Partnerships</div>
+      <div class="svc-desc">Co-branded content deals, agency partnerships, and cross-platform distribution. Signal Times connects brands to premium media real estate with built-in editorial authority.</div>
+      <div class="svc-tags"><span class="svc-tag">Partnerships</span><span class="svc-tag">Distribution</span><span class="svc-tag">Co-brand</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ARTICLE MODAL — Full newspaper style -->
+<div id="articleModal" style="display:none;position:fixed;inset:0;z-index:2000;overflow-y:auto;background:#080808;">
+  <!-- Nav Bar -->
+  <div style="position:sticky;top:0;z-index:10;background:rgba(8,8,8,0.96);backdrop-filter:blur(20px);border-bottom:1px solid #242424;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;">
+    <button id="backBtn" style="display:flex;align-items:center;gap:8px;background:none;border:none;color:#777;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;padding:0;cursor:none;transition:color 0.2s;" onmouseenter="this.style.color='#C8102E'" onmouseleave="this.style.color='#777'">← Signal Times</button>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#fff;">SIGNAL <span style="color:#C8102E;">TIMES</span></div>
+    <div id="articleReadTime" style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:#444;">5 MIN READ</div>
+  </div>
+
+  <!-- Hero image — full width cinematic -->
+  <div id="articleHeroWrap" style="width:100%;height:65vh;min-height:380px;max-height:600px;position:relative;overflow:hidden;background:#0d0002;">
+    <img id="articleHeroImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.5);transition:filter 0.5s;">
+    <div style="position:absolute;inset:0;background:linear-gradient(to top,#080808 0%,rgba(8,0,2,0.3) 45%,transparent 75%);"></div>
+    <div style="position:absolute;bottom:0;left:0;right:0;padding:32px 40px 44px;max-width:860px;">
+      <span id="articleHeroCat" style="display:inline-block;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.4em;text-transform:uppercase;color:#fff;background:#C8102E;padding:5px 14px;margin-bottom:18px;"></span>
+      <h1 id="articleHeroTitle" style="font-family:'Playfair Display',serif;font-size:clamp(26px,4vw,50px);font-weight:900;color:#fff;line-height:1.1;text-shadow:0 2px 24px rgba(0,0,0,0.6);margin:0;"></h1>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div style="max-width:760px;margin:0 auto;padding:44px 24px 48px;">
+    <!-- Author / meta -->
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:36px;padding-bottom:28px;border-bottom:1px solid #1e1e1e;">
+      <div style="width:42px;height:42px;border-radius:50%;background:#C8102E;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;color:#fff;flex-shrink:0;">ST</div>
+      <div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.1em;color:#fff;">Signal Times Editorial Desk</div>
+        <div id="articleDateLine" style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#555;margin-top:3px;"></div>
+      </div>
+      <div style="margin-left:auto;">
+        <a href="https://twitter.com/signaltimesmedia" target="_blank" style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#555;text-decoration:none;border:1px solid #2a2a2a;padding:7px 16px;transition:all 0.2s;display:inline-block;" onmouseenter="this.style.borderColor='#C8102E';this.style.color='#fff'" onmouseleave="this.style.borderColor='#2a2a2a';this.style.color='#555'">↗ Share</a>
+      </div>
+    </div>
+
+    <!-- Body part 1 (2 paragraphs) -->
+    <div id="articleBody1" style="font-size:18px;line-height:2;color:rgba(229,221,212,0.82);font-family:'Barlow',sans-serif;font-weight:300;"></div>
+
+    <!-- Mid article image -->
+    <div id="articleMidImgWrap" style="margin:44px 0;display:none;">
+      <img id="articleMidImg" src="" alt="" style="width:100%;max-height:420px;object-fit:cover;opacity:0.78;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#3a3a3a;margin-top:10px;">Signal Times / Photo</div>
+    </div>
+
+    <!-- Pull quote -->
+    <div id="pullQuoteWrap" style="margin:44px 0;padding:28px 32px 28px 28px;border-left:3px solid #C8102E;background:rgba(200,16,46,0.04);display:none;">
+      <div id="pullQuoteText" style="font-family:'Playfair Display',serif;font-size:22px;font-style:italic;line-height:1.65;color:#fff;"></div>
+    </div>
+
+    <!-- Body part 2 (remaining paragraphs) -->
+    <div id="articleBody2" style="font-size:18px;line-height:2;color:rgba(229,221,212,0.82);font-family:'Barlow',sans-serif;font-weight:300;margin-top:28px;"></div>
+
+    <!-- Tags -->
+    <div id="articleTags" style="margin-top:48px;display:flex;flex-wrap:wrap;gap:8px;"></div>
+
+    <!-- Footer -->
+    <div style="margin-top:40px;padding-top:24px;border-top:1px solid #1e1e1e;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:#3a3a3a;">© Signal Times — All Rights Reserved</div>
+      <a href="https://signaltimesmedia.com" style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:#C8102E;text-decoration:none;">signaltimesmedia.com</a>
+    </div>
+  </div>
+
+  <!-- Related articles -->
+  <div style="background:#0e0e0e;border-top:1px solid #1a1a1a;padding:52px 24px 72px;">
+    <div style="max-width:760px;margin:0 auto;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.5em;text-transform:uppercase;color:#C8102E;margin-bottom:8px;">More Coverage</div>
+      <h3 style="font-family:'Playfair Display',serif;font-size:26px;font-weight:900;color:#fff;margin-bottom:28px;">Related <em>Stories</em></h3>
+      <div id="relatedArticles" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- NEWS -->
+<section class="news-section" id="news">
+  <div class="sec-header reveal">
+    <div>
+      <div class="sec-eyebrow">Latest Coverage</div>
+      <h2 class="sec-title">From the<br><em>Signal Times</em> Desk</h2>
+    </div>
+    <a href="#" class="sec-link">All Articles</a>
+  </div>
+  <div class="news-grid reveal">
+    <div class="news-feat" id="featCard" style="cursor:none;position:relative;">
+      <div class="news-feat-bg"></div>
+      <div class="news-feat-orb"></div>
+      <img id="featImg" src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=900&q=80" alt="News" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.22;transition:opacity 0.4s;">
+      <div class="news-feat-content" style="position:relative;z-index:2;">
+        <span class="news-cat" id="featCat">World</span>
+        <h3 class="news-feat-title" id="featTitle">Trump and Xi Open Beijing Summit as Taiwan Takes Centre Stage in High-Stakes U.S.–China Talks</h3>
+        <div class="news-meta" id="featMeta">Signal Times Editorial &nbsp;·&nbsp; May 14, 2026</div>
+        <div style="margin-top:16px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:8px;">Read Full Story <span style="font-size:14px;">→</span></div>
+      </div>
+    </div>
+    <div class="news-side">
+      <div class="news-card" id="card0" style="cursor:none;position:relative;overflow:hidden;">
+        <img class="news-card-img" src="https://images.unsplash.com/photo-1547586696-ea22b4d4235d?w=400&q=70" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.08;transition:opacity 0.3s;">
+        <div style="position:relative;z-index:1;">
+          <div class="news-card-cat" id="cat0">Europe</div>
+          <div class="news-card-title" id="title0">Russia Launches Mass Drone and Missile Strike on Kyiv — Six Districts Hit, Dozens Injured</div>
+        </div>
+        <div class="news-card-meta" id="meta0">May 14, 2026</div>
+      </div>
+      <div class="news-card" id="card1" style="cursor:none;position:relative;overflow:hidden;">
+        <img class="news-card-img" src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400&q=70" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.08;transition:opacity 0.3s;">
+        <div style="position:relative;z-index:1;">
+          <div class="news-card-cat" id="cat1">Middle East</div>
+          <div class="news-card-title" id="title1">Lebanon and Israel Hold Direct Talks in Washington as Strikes Kill 12 in Southern Lebanon</div>
+        </div>
+        <div class="news-card-meta" id="meta1">May 14, 2026</div>
+      </div>
+      <div class="news-card" id="card2" style="cursor:none;position:relative;overflow:hidden;">
+        <img class="news-card-img" src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&q=70" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.08;transition:opacity 0.3s;">
+        <div style="position:relative;z-index:1;">
+          <div class="news-card-cat" id="cat2">Africa</div>
+          <div class="news-card-title" id="title2">HRW: M23 Rebels and Rwandan Army Carried Out Mass Atrocities During Occupation of Eastern DRC</div>
+        </div>
+        <div class="news-card-meta" id="meta2">May 14, 2026</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="why-section" id="about">
+  <div class="why-grid">
+    <div class="why-visual reveal">
+      <div class="why-logo-wrap">
+        <div class="ring ring-1"></div>
+        <div class="ring ring-2"></div>
+        <div class="ring ring-3"></div>
+        <div class="why-center-globe">
+          <div class="why-logo-inner">
+            <span class="s">SIGNAL</span>
+            <div class="d"></div>
+            <span class="t">TIMES</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="why-content reveal">
+      <div class="sec-eyebrow">Why Signal Times</div>
+      <h2 class="sec-title">Media Meets<br><em>Precision.</em></h2>
+      <ul class="why-points">
+        <li class="why-point">
+          <div class="wp-num">01</div>
+          <div><div class="wp-title">Not An Agency. A Media Company.</div><div class="wp-desc">We own the channel. Signal Times is a news and media brand, not a middleman. Direct reach, higher trust, and editorial authority no agency can fake.</div></div>
+        </li>
+        <li class="why-point">
+          <div class="wp-num">02</div>
+          <div><div class="wp-title">Campaigns, Not Vanity Posts</div><div class="wp-desc">We produce real campaigns — scripted, filmed, delivered. No ghost-posting. Every dollar goes toward creative and reach that actually converts.</div></div>
+        </li>
+        <li class="why-point">
+          <div class="wp-num">03</div>
+          <div><div class="wp-title">Meta &amp; Paid Ads Done Right</div><div class="wp-desc">Full Meta advertising management with A/B testing and transparent reporting. Data-backed decisions, not guesswork.</div></div>
+        </li>
+        <li class="why-point">
+          <div class="wp-num">04</div>
+          <div><div class="wp-title">Global Reach, Local Precision</div><div class="wp-desc">Signal Times distributes across 14+ markets. Regional penetration or global scale — we have the infrastructure and the editorial credibility to deliver.</div></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ADS CALLOUT -->
+<section class="ads-section">
+  <div class="ads-inner">
+    <div>
+      <div class="ads-eyebrow">Advertising</div>
+      <h2 class="ads-title">Run Your Next Meta Campaign<br>Through a <em>Real Media Brand.</em></h2>
+      <div class="ads-platforms">
+        <span class="plat">Meta</span><span class="plat">Instagram</span><span class="plat">Facebook</span><span class="plat">Google</span><span class="plat">Programmatic</span>
+      </div>
+    </div>
+    <div class="ads-btns">
+      <a href="#contact" class="btn-white">Launch a Campaign</a>
+      <a href="#services" class="btn-trans">View Ad Packages</a>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process-section" id="process">
+  <div class="sec-header reveal">
+    <div>
+      <div class="sec-eyebrow">How It Works</div>
+      <h2 class="sec-title">From Brief<br>to <em>Broadcast</em></h2>
+    </div>
+  </div>
+  <div class="process-steps">
+    <div class="proc-step reveal">
+      <div class="step-num">01</div>
+      <div class="step-title">Brief &amp; Strategy</div>
+      <div class="step-desc">We understand your goals, audience, and budget. Then we build a media and advertising strategy around your actual business objectives — not templates.</div>
+    </div>
+    <div class="proc-step reveal">
+      <div class="step-num">02</div>
+      <div class="step-title">Creative &amp; Production</div>
+      <div class="step-desc">Our team concepts and produces your campaign — scripts to filming to final cuts. Editorial articles are written, reviewed, and positioned for maximum credibility.</div>
+    </div>
+    <div class="proc-step reveal">
+      <div class="step-num">03</div>
+      <div class="step-title">Launch &amp; Distribute</div>
+      <div class="step-desc">Campaigns go live across paid channels (Meta, Google) and the Signal Times editorial network simultaneously. Maximum reach, one coordinated push.</div>
+    </div>
+    <div class="proc-step reveal">
+      <div class="step-num">04</div>
+      <div class="step-title">Report &amp; Optimize</div>
+      <div class="step-desc">Real-time dashboards, weekly reporting, and active optimization. You see exactly where every impression goes and exactly what it delivers.</div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testi-section">
+  <div class="sec-header reveal">
+    <div>
+      <div class="sec-eyebrow">Client Voices</div>
+      <h2 class="sec-title">The Signal<br><em>Speaks for Itself</em></h2>
+    </div>
+  </div>
+  <div class="testi-grid">
+    <div class="testi-card reveal">
+      <div class="testi-q">Signal Times didn't just run our ads — they embedded our brand into a credible news environment. The trust transfer was real and measurable.</div>
+      <div class="testi-author"><div class="testi-av">RK</div><div><div class="testi-name">Rami K.</div><div class="testi-role">CMO, Apex Ventures</div></div></div>
+    </div>
+    <div class="testi-card reveal">
+      <div class="testi-q">The campaign production team delivered a 90-second brand film that looked like a Hollywood production. It ran on Meta and our CPA dropped by 38%.</div>
+      <div class="testi-author"><div class="testi-av">SM</div><div><div class="testi-name">Sara M.</div><div class="testi-role">Founder, Meridian Group</div></div></div>
+    </div>
+    <div class="testi-card reveal">
+      <div class="testi-q">Finally, a media partner that understands both sides — editorial credibility and advertising performance. Signal Times is the only call I make now.</div>
+      <div class="testi-author"><div class="testi-av">JA</div><div><div class="testi-name">James A.</div><div class="testi-role">Director, Northgate Media</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="sec-header reveal">
+    <div>
+      <div class="sec-eyebrow">Get In Touch</div>
+      <h2 class="sec-title">Ready to<br><em>Make Noise?</em></h2>
+    </div>
+  </div>
+  <div class="contact-grid">
+    <div class="reveal">
+      <p class="contact-desc">Whether you're launching a brand, scaling a campaign, or placing a news feature — the Signal Times team is ready. Tell us what you need and we'll build it.</p>
+      <div class="contact-items">
+        <div class="ci">
+          <div class="ci-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+          <div><div class="ci-label">Email</div><div class="ci-val">support@signaltimesmedia.com</div></div>
+        </div>
+        <div class="ci">
+          <div class="ci-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div>
+          <div><div class="ci-label">WhatsApp / Phone</div><div class="ci-val">+971 521 758 912</div></div>
+        </div>
+        <div class="ci">
+          <div class="ci-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <div><div class="ci-label">Office Hours</div><div class="ci-val">Mon – Fri, 9AM – 6PM GST (Dubai)</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal">
+      <form class="form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="contactForm">
+        <input type="hidden" name="form-name" value="contact">
+        <input type="hidden" name="bot-field" style="display:none">
+        <div class="form-row">
+          <div class="fg"><label class="flabel">First Name</label><input class="finput" type="text" name="first-name" placeholder="John" required></div>
+          <div class="fg"><label class="flabel">Last Name</label><input class="finput" type="text" name="last-name" placeholder="Doe" required></div>
+        </div>
+        <div class="fg"><label class="flabel">Email Address</label><input class="finput" type="email" name="email" placeholder="john@company.com" required></div>
+        <div class="fg">
+          <label class="flabel">Service Interested In</label>
+          <select class="fselect finput" name="service" required>
+            <option value="">Select a service...</option>
+            <option>Digital Advertising (Meta / Google)</option>
+            <option>Campaign Production (Film)</option>
+            <option>News &amp; Editorial Placement</option>
+            <option>Brand Feature / Sponsored Content</option>
+            <option>Media Partnership</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="fg"><label class="flabel">Tell Us About Your Project</label><textarea class="ftextarea" name="message" placeholder="Describe your campaign goals, budget, and timeline..." required></textarea></div>
+        <button type="submit" class="fsubmit">Send Inquiry →</button>
+        <div id="formSuccess" style="display:none;margin-top:16px;padding:16px 20px;background:rgba(200,16,46,0.1);border:1px solid var(--red);font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:0.15em;color:#fff;">
+          ✓ &nbsp; Message received — we'll be in touch within 24 hours.
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <a class="footer-logo" href="#">
+        <div class="footer-logo-img">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <rect width="200" height="200" fill="#C8102E"/>
+            <circle cx="100" cy="96" r="66" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+            <circle cx="100" cy="96" r="44" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+            <circle cx="100" cy="96" r="22" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <ellipse cx="100" cy="96" rx="66" ry="20" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.7"/>
+            <ellipse cx="100" cy="96" rx="28" ry="66" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.7"/>
+            <circle cx="144" cy="57" r="9" fill="rgba(255,255,255,0.72)"/>
+            <text x="100" y="148" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="22" font-weight="900" fill="white" letter-spacing="3">SIGNAL</text>
+            <line x1="80" y1="156" x2="120" y2="156" stroke="#C8102E" stroke-width="2.5"/>
+            <text x="100" y="171" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="rgba(255,255,255,0.78)" letter-spacing="5">TIMES</text>
+          </svg>
+        </div>
+        <div>
+          <span class="footer-logo-name">Signal Times</span>
+          <span class="footer-logo-sub">Media &amp; News</span>
+        </div>
+      </a>
+      <p class="footer-desc">A global media and advertising company delivering news, campaigns, and digital advertising that moves markets. We are the signal in the noise.</p>
+    </div>
+    <div>
+      <div class="fc-title">Services</div>
+      <ul class="fc-links">
+        <li><a href="#services">Digital Advertising</a></li>
+        <li><a href="#services">Meta &amp; Google Ads</a></li>
+        <li><a href="#services">Campaign Production</a></li>
+        <li><a href="#services">Editorial &amp; News</a></li>
+        <li><a href="#services">Sponsored Content</a></li>
+        <li><a href="#services">Media Partnerships</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="fc-title">Company</div>
+      <ul class="fc-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#news">Latest News</a></li>
+        <li><a href="#process">How It Works</a></li>
+        <li><a href="#contact">Contact Us</a></li>
+        <li><a href="#">Write for Us</a></li>
+        <li><a href="#">Careers</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="fc-title">Follow Us</div>
+      <ul class="fc-links">
+        <li><a href="https://instagram.com/signaltimesmedia" target="_blank">Instagram</a></li>
+        <li><a href="https://linkedin.com/company/signaltimesmedia" target="_blank">LinkedIn</a></li>
+        <li><a href="https://x.com/signaltimesmedia" target="_blank">X / Twitter</a></li>
+        <li><a href="https://facebook.com/signaltimesmedia" target="_blank">Facebook</a></li>
+        <li><a href="https://youtube.com/@signaltimesmedia" target="_blank">YouTube</a></li>
+        <li><a href="https://tiktok.com/@signaltimesmedia" target="_blank">TikTok</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2026 <span>Signal Times</span> — All Rights Reserved</div>
+    <div class="footer-legal">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Cookie Policy</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── CURSOR ──
+const cur = document.getElementById('cur');
+const ring = document.getElementById('curRing');
+let mx=-200,my=-200,rx=-200,ry=-200;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+(function loop(){
+  rx+=(mx-rx)*0.14; ry+=(my-ry)*0.14;
+  cur.style.left=mx+'px'; cur.style.top=my+'px';
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(loop);
+})();
+document.querySelectorAll('a,button,.svc,.news-card,.testi-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ring.style.width='56px';ring.style.height='56px';ring.style.borderColor='rgba(200,16,46,0.9)';});
+  el.addEventListener('mouseleave',()=>{ring.style.width='32px';ring.style.height='32px';ring.style.borderColor='rgba(200,16,46,0.6)';});
+});
+
+// ── SCROLL REVEAL ──
+const revealObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');revealObs.unobserve(e.target);}});
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(r=>revealObs.observe(r));
+
+// ── NAV ──
+const navSections=document.querySelectorAll('section[id]');
+const navAs=document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll',()=>{
+  let c='';
+  navSections.forEach(s=>{if(window.scrollY>=s.offsetTop-100)c=s.id;});
+  navAs.forEach(a=>{a.style.color=a.getAttribute('href')==='#'+c?'var(--white)':'';});
+  document.querySelector('nav').style.boxShadow=window.scrollY>10?'0 4px 40px rgba(0,0,0,0.6)':'';
+});
+
+// ── ARTICLE MODAL ──
+// Curated editorial/news images — NO random stock, all relevant
+const catImages = {
+  'World':       'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&q=85',
+  'Politics':    'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=1200&q=85',
+  'Europe':      'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=1200&q=85',
+  'Middle East': 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1200&q=85',
+  'Asia':        'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=1200&q=85',
+  'Americas':    'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=1200&q=85',
+  'Africa':      'https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=1200&q=85',
+  'Economy':     'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&q=85',
+  'Technology':  'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=85',
+  'War':         'https://images.unsplash.com/photo-1580130775562-0ef92da028de?w=1200&q=85',
+  'Climate':     'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=1200&q=85',
+  'Business':    'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=85',
+  'Health':      'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1200&q=85',
+  'Breaking':    'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&q=85',
+  'default':     'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&q=85',
+};
+const midImages = {
+  'World':       'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=900&q=80',
+  'Politics':    'https://images.unsplash.com/photo-1575320181282-9afab399332c?w=900&q=80',
+  'Europe':      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=900&q=80',
+  'Middle East': 'https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=900&q=80',
+  'Asia':        'https://images.unsplash.com/photo-1535139262971-ab8b9aea6a36?w=900&q=80',
+  'Americas':    'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=900&q=80',
+  'Africa':      'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=900&q=80',
+  'Economy':     'https://images.unsplash.com/photo-1642543492481-44e81e3914a7?w=900&q=80',
+  'Technology':  'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=900&q=80',
+  'War':         'https://images.unsplash.com/photo-1580130775562-0ef92da028de?w=900&q=80',
+  'Climate':     'https://images.unsplash.com/photo-1473081556163-2a17de81fc97?w=900&q=80',
+  'Business':    'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=900&q=80',
+  'Health':      'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=900&q=80',
+  'Breaking':    'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=900&q=80',
+  'default':     'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=900&q=80',
+};
+
+window.stArticles = [];
+
+function getImg(cat){
+  if(!cat) return catImages['default'];
+  if(catImages[cat]) return catImages[cat];
+  for(const k of Object.keys(catImages)){
+    if(cat.toLowerCase().includes(k.toLowerCase())) return catImages[k];
+  }
+  return catImages['default'];
+}
+function getMidImg(cat){
+  if(!cat) return midImages['default'];
+  if(midImages[cat]) return midImages[cat];
+  for(const k of Object.keys(midImages)){
+    if(cat.toLowerCase().includes(k.toLowerCase())) return midImages[k];
+  }
+  return midImages['default'];
+}
+
+async function openArticle(idx) {
+  const modal = document.getElementById('articleModal');
+  const art = window.stArticles[idx];
+  if(!art) return;
+
+  // Set hero image + text
+  document.getElementById('articleHeroImg').src = getImg(art.category);
+  document.getElementById('articleHeroCat').textContent = art.category;
+  document.getElementById('articleHeroTitle').textContent = art.headline;
+  document.getElementById('articleDateLine').textContent = art.date + ' · Signal Times Editorial';
+  document.getElementById('articleReadTime').textContent = '8 MIN READ';
+
+  // Reset
+  document.getElementById('articleBody1').innerHTML = '<p style="color:#444;font-style:italic;font-size:15px;">Loading full article...</p>';
+  document.getElementById('articleBody2').innerHTML = '';
+  document.getElementById('pullQuoteWrap').style.display = 'none';
+  document.getElementById('articleMidImgWrap').style.display = 'none';
+  document.getElementById('articleTags').innerHTML = '';
+
+  modal.style.display = 'block';
+  modal.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+
+  // Related articles — clickable
+  const related = window.stArticles.filter((_,i)=>i!==idx).slice(0,3);
+  document.getElementById('relatedArticles').innerHTML = related.map(r=>`
+    <div onclick="openArticle(${window.stArticles.indexOf(r)})" style="background:#141414;padding:24px 20px;border-top:2px solid #1e1e1e;cursor:none;transition:border-top-color 0.2s;position:relative;overflow:hidden;" onmouseenter="this.style.borderTopColor='#C8102E'" onmouseleave="this.style.borderTopColor='#1e1e1e'">
+      <img src="${getImg(r.category)}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.07;pointer-events:none;">
+      <div style="position:relative;z-index:1;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.35em;text-transform:uppercase;color:#C8102E;margin-bottom:8px;">${r.category}</div>
+        <div style="font-family:'Playfair Display',serif;font-size:15px;line-height:1.5;color:rgba(229,221,212,0.85);margin-bottom:10px;">${r.headline}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#555;">Read Full Story →</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Generate FULL long-form article via AI
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:2500,
+        messages:[{role:'user', content:`You are a senior journalist at Signal Times, a global media outlet comparable to BBC, Reuters, or The Guardian. Write a comprehensive, long-form, premium news article about: "${art.headline}". Published: ${art.date}.
+
+Return ONLY raw valid JSON — no markdown fences, no explanation before or after:
+{
+  "subheadline": "A compelling 12-15 word subheadline that gives deeper context to the headline",
+  "keyFacts": [
+    "Specific fact, stat or data point relevant to this story",
+    "Another key fact or development",
+    "Third important context point"
+  ],
+  "paragraphs": [
+    "LEDE: Powerful opening paragraph that hooks the reader immediately. Set the scene vividly. 4-5 strong sentences that establish what happened, where, when, and why it matters globally.",
+    "BACKGROUND: Rich historical and political context. Why has this situation developed? What are the root causes? What happened in the weeks/months leading up to this? 5 sentences.",
+    "KEY DEVELOPMENTS: Specific details of what actually happened. Concrete facts, timeline, specific locations, numbers where relevant. What are the most important developments? 5 sentences.",
+    "ANALYSIS: What does this mean? Why does this matter beyond the immediate event? Expert-level analysis of implications for the region, global order, economy, or security. 5 sentences.",
+    "STAKEHOLDERS: Who are the key players — governments, organizations, populations affected? How are different parties reacting and what are their positions? 5 sentences.",
+    "INTERNATIONAL RESPONSE: How is the international community responding? What actions are being taken by world powers, UN, regional bodies? What statements have been made? 4-5 sentences.",
+    "OUTLOOK: What happens next? What are the possible scenarios? What should readers watch for in the coming days and weeks? What are the stakes? 4 sentences."
+  ],
+  "pullQuote": "The single most powerful, impactful, shareable sentence from the entire article — something that captures the essence of the story",
+  "tags": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"],
+  "readTime": "8 min read"
+}
+
+CRITICAL: Every paragraph must be genuinely informative, substantive journalism. No filler. Write like this will be read by millions. Be factual, neutral, authoritative. This is premium Signal Times content.`}]
+      })
+    });
+    const data = await resp.json();
+    const raw = data.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+    const article = JSON.parse(raw);
+    const p = article.paragraphs || [];
+
+    // Build body part 1: subheadline + key facts + first 3 paragraphs
+    let html1 = '';
+
+    if(article.subheadline){
+      html1 += `<p style="font-family:'Playfair Display',serif;font-size:21px;font-style:italic;color:rgba(229,221,212,0.55);line-height:1.65;margin-bottom:36px;padding-bottom:32px;border-bottom:1px solid #1e1e1e;">${article.subheadline}</p>`;
+    }
+
+    if(article.keyFacts && article.keyFacts.length){
+      html1 += `<div style="background:#0f0f0f;border:1px solid #222;border-left:3px solid #C8102E;padding:26px 30px;margin-bottom:40px;border-radius:1px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.45em;text-transform:uppercase;color:#C8102E;margin-bottom:18px;">Key Facts</div>
+        ${article.keyFacts.map(f=>`<div style="display:flex;gap:14px;margin-bottom:12px;font-size:14px;line-height:1.7;color:rgba(229,221,212,0.72);font-family:'Barlow',sans-serif;"><span style="color:#C8102E;flex-shrink:0;margin-top:2px;">▸</span><span>${f}</span></div>`).join('')}
+      </div>`;
+    }
+
+    html1 += p.slice(0,3).map(t=>`<p style="margin-bottom:32px;font-size:18px;line-height:2;font-family:'Barlow',sans-serif;font-weight:300;color:rgba(229,221,212,0.85);">${t}</p>`).join('');
+    document.getElementById('articleBody1').innerHTML = html1;
+
+    // Mid image
+    document.getElementById('articleMidImg').src = getMidImg(art.category);
+    document.getElementById('articleMidImgWrap').style.display = 'block';
+
+    // Pull quote
+    if(article.pullQuote){
+      document.getElementById('pullQuoteText').textContent = '\u201C' + article.pullQuote + '\u201D';
+      document.getElementById('pullQuoteWrap').style.display = 'block';
+    }
+
+    // Remaining paragraphs
+    document.getElementById('articleBody2').innerHTML = p.slice(3).map(t=>`<p style="margin-bottom:32px;font-size:18px;line-height:2;font-family:'Barlow',sans-serif;font-weight:300;color:rgba(229,221,212,0.85);">${t}</p>`).join('');
+
+    // Tags
+    if(article.tags){
+      document.getElementById('articleTags').innerHTML = article.tags.map(t=>
+        `<span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#555;border:1px solid #242424;padding:6px 14px;display:inline-block;transition:all 0.2s;" onmouseenter="this.style.borderColor='#C8102E';this.style.color='#fff'" onmouseleave="this.style.borderColor='#242424';this.style.color='#555'">${t}</span>`
+      ).join('');
+    }
+
+    if(article.readTime) document.getElementById('articleReadTime').textContent = article.readTime.toUpperCase();
+
+  } catch(e) {
+    console.error('Article error:', e);
+    // Try again with simpler prompt as fallback
+    try {
+      const resp2 = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          model:'claude-sonnet-4-20250514',
+          max_tokens:2500,
+          messages:[{role:'user', content:`Write a long, detailed, professional news article about: "${art.headline}". Date: ${art.date}.
+
+Write 7 full paragraphs of real journalism — like BBC or Reuters. Each paragraph 5+ sentences. Be thorough, factual, and informative. Cover background, what happened, analysis, who is affected, international reaction, and what comes next.
+
+Format: return ONLY the 7 paragraphs separated by double newlines. No JSON, no headers, just the article text.`}]
+        })
+      });
+      const d2 = await resp2.json();
+      const text = d2.content.map(b=>b.text||'').join('');
+      const paras = text.trim().split(/\n\n+/).filter(p=>p.trim().length > 50);
+      const part1 = paras.slice(0,3).map(t=>`<p style="margin-bottom:32px;font-size:18px;line-height:2;font-family:'Barlow',sans-serif;font-weight:300;color:rgba(229,221,212,0.85);">${t}</p>`).join('');
+      const part2 = paras.slice(3).map(t=>`<p style="margin-bottom:32px;font-size:18px;line-height:2;font-family:'Barlow',sans-serif;font-weight:300;color:rgba(229,221,212,0.85);">${t}</p>`).join('');
+      document.getElementById('articleBody1').innerHTML = part1;
+      document.getElementById('articleMidImg').src = getMidImg(art.category);
+      document.getElementById('articleMidImgWrap').style.display = 'block';
+      document.getElementById('articleBody2').innerHTML = part2;
+    } catch(e2) {
+      console.error('Fallback also failed:', e2);
+    }
+  }
+}
+
+function closeArticle() {
+  document.getElementById('articleModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+document.getElementById('articleModal').addEventListener('click', function(e){
+  if(e.target === this) closeArticle();
+});
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeArticle(); });
+document.getElementById('backBtn').addEventListener('click', closeArticle);
+
+// Hook up news card clicks — runs after news data is loaded
+function bindNewsClicks() {
+  const featCard = document.getElementById('featCard');
+  if(featCard) featCard.onclick = ()=>openArticle(0);
+  [0,1,2].forEach(i=>{
+    const c = document.getElementById('card'+i);
+    if(c) c.onclick = ()=>openArticle(i+1);
+  });
+}
+
+// Update featured image based on category
+function updateNewsImages(articles) {
+  if(!articles) return;
+  const featImg = document.getElementById('featImg');
+  if(featImg && articles[0]) featImg.src = getImg(articles[0].category);
+  [0,1,2].forEach(i=>{
+    const img = document.querySelector('#card'+i+' img');
+    if(img && articles[i+1]) img.src = getImg(articles[i+1].category).replace('w=900','w=400');
+  });
+}
+
+// ── NETLIFY FORM ──
+const contactForm = document.getElementById('contactForm');
+if(contactForm){
+  contactForm.addEventListener('submit', async function(e){
+    e.preventDefault();
+    const btn = contactForm.querySelector('.fsubmit');
+    btn.textContent = 'Sending...';
+    btn.style.opacity = '0.7';
+    try {
+      const formData = new FormData(contactForm);
+      await fetch('/', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: new URLSearchParams(formData).toString() });
+      contactForm.querySelectorAll('input,select,textarea').forEach(el => el.value = '');
+      btn.textContent = 'Send Inquiry →';
+      btn.style.opacity = '1';
+      document.getElementById('formSuccess').style.display = 'block';
+      setTimeout(()=>{ document.getElementById('formSuccess').style.display='none'; }, 6000);
+    } catch(err){
+      btn.textContent = 'Send Inquiry →';
+      btn.style.opacity = '1';
+      alert('Something went wrong. Please email us directly at support@signaltimesmedia.com');
+    }
+  });
+}
+
+
+
+(async function initGeoNews(){
+
+  // 1. Detect visitor location via IP
+  let city='Global', country='Global', timezone=Intl.DateTimeFormat().resolvedOptions().timeZone, region='World';
+  try {
+    const g = await fetch('https://ipapi.co/json/');
+    const d = await g.json();
+    city     = d.city          || city;
+    country  = d.country_name  || country;
+    timezone = d.timezone      || timezone;
+    const rm = {
+      'AE':'Middle East','SA':'Middle East','QA':'Middle East','KW':'Middle East','BH':'Middle East','OM':'Middle East','IL':'Middle East','LB':'Middle East','JO':'Middle East','IQ':'Middle East','IR':'Middle East','SY':'Middle East','YE':'Middle East',
+      'US':'Americas','CA':'Americas','MX':'Americas','BR':'Americas','AR':'Americas','CO':'Americas','CL':'Americas',
+      'GB':'Europe','FR':'Europe','DE':'Europe','IT':'Europe','ES':'Europe','NL':'Europe','PL':'Europe','UA':'Europe','RU':'Europe','TR':'Europe',
+      'CN':'Asia','JP':'Asia','IN':'Asia','KR':'Asia','SG':'Asia','ID':'Asia','TH':'Asia','VN':'Asia','MY':'Asia','PK':'Asia','BD':'Asia',
+      'NG':'Africa','ZA':'Africa','EG':'Africa','KE':'Africa','GH':'Africa','ET':'Africa','TZ':'Africa','MA':'Africa',
+      'AU':'Asia Pacific','NZ':'Asia Pacific',
+    };
+    region = rm[d.country_code] || 'World';
+  } catch(e){}
+
+  // 2. Local date/time
+  function localDT(tz){
+    const now=new Date();
+    return {
+      full:  now.toLocaleDateString('en-GB',{timeZone:tz,weekday:'long',year:'numeric',month:'long',day:'numeric'}),
+      short: now.toLocaleDateString('en-GB',{timeZone:tz,day:'numeric',month:'long',year:'numeric'}),
+      time:  now.toLocaleTimeString('en-GB',{timeZone:tz,hour:'2-digit',minute:'2-digit',hour12:false}),
+      ymd:   now.toISOString().slice(0,10),
+    };
+  }
+  const dt = localDT(timezone);
+
+  // 3. Update masthead
+  const mDate = document.querySelector('.hero-masthead-date');
+  const mEd   = document.querySelector('.hero-masthead-edition');
+  if(mDate) mDate.textContent = dt.full;
+  if(mEd)   mEd.textContent   = city+' Edition  ·  '+dt.time+' Local';
+
+  // 4. City in topbar
+  const tbRight = document.querySelector('.topbar-right');
+  if(tbRight && city !== 'Global'){
+    const loc = document.createElement('span');
+    loc.style.cssText='color:rgba(255,255,255,0.55);font-size:10px;letter-spacing:0.2em;border-right:1px solid rgba(255,255,255,0.15);padding-right:16px;margin-right:8px;';
+    loc.textContent='📍 '+city;
+    tbRight.prepend(loc);
+  }
+
+  // ── LIVE NEWS SYSTEM ──
+  async function loadNewsFromBackend() {
+    const resp = await fetch('/.netlify/functions/get-news?date='+dt.ymd);
+    if(!resp.ok) throw new Error('Backend unavailable');
+    const data = await resp.json();
+    if(data.empty || (!data.stories?.length && !data.breaking?.length)) throw new Error('No news yet');
+    return data;
+  }
+
+  async function loadNewsFromAI() {
+    const cacheKey = 'st_news_v2_'+dt.ymd+'_'+region;
+    try{ const c=sessionStorage.getItem(cacheKey); if(c) return JSON.parse(c); }catch(e){}
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:2000,
+        tools:[{type:'web_search_20250305',name:'web_search'}],
+        messages:[{role:'user',content:'Today is '+dt.short+'. Search for today\'s top news. Visitor is in '+city+', '+country+' ('+region+').\n\nSearch for the top global breaking news today, then return ONLY valid JSON no markdown:\n{\n  "date": "'+dt.short+'",\n  "breaking": [\n    {"id":"b1","category":"Breaking","headline":"...","summary":"2-3 sentence summary","timestamp":"X min ago","isBreaking":true}\n  ],\n  "stories": [\n    {"id":"s1","category":"World","headline":"...","summary":"3-4 sentence summary","timestamp":"10:00","isBreaking":false,"featured":true},\n    {"id":"s2","category":"Europe","headline":"...","summary":"...","timestamp":"09:45","isBreaking":false,"featured":false},\n    {"id":"s3","category":"Middle East","headline":"...","summary":"...","timestamp":"09:30","isBreaking":false,"featured":false},\n    {"id":"s4","category":"Economy","headline":"...","summary":"...","timestamp":"09:15","isBreaking":false,"featured":false},\n    {"id":"s5","category":"Technology","headline":"...","summary":"...","timestamp":"09:00","isBreaking":false,"featured":false},\n    {"id":"s6","category":"Americas","headline":"...","summary":"...","timestamp":"08:45","isBreaking":false,"featured":false},\n    {"id":"s7","category":"Asia","headline":"...","summary":"...","timestamp":"08:30","isBreaking":false,"featured":false},\n    {"id":"s8","category":"Africa","headline":"...","summary":"...","timestamp":"08:15","isBreaking":false,"featured":false},\n    {"id":"s9","category":"Politics","headline":"...","summary":"...","timestamp":"08:00","isBreaking":false,"featured":false},\n    {"id":"s10","category":"Climate","headline":"...","summary":"...","timestamp":"07:45","isBreaking":false,"featured":false}\n  ],\n  "heroItems":[{"category":"...","headline":"short"},{"category":"...","headline":"short"},{"category":"...","headline":"short"}],\n  "ticker":["item1","item2","item3","item4","item5"]\n}\nReal news from today '+dt.short+', prioritize '+region+' region. Minimum 8-10 stories.'}]
+      })
+    });
+    const apiData = await resp.json();
+    const raw = apiData.content.map(function(b){return b.text||'';}).join('').replace(/```json|```/g,'').trim();
+    const news = JSON.parse(raw);
+    try{ sessionStorage.setItem(cacheKey, JSON.stringify(news)); }catch(e){}
+    return news;
+  }
+
+  let news = null;
+  try { news = await loadNewsFromBackend(); }
+  catch(e) {
+    try { news = await loadNewsFromAI(); }
+    catch(e2) { console.error('All news sources failed', e2); return; }
+  }
+  if(!news) return;
+
+  // ── INJECT NEWS ──
+  function injectNews(news) {
+    const allStories = [...(news.breaking||[]), ...(news.stories||[])];
+    const featured = (news.stories||[]).find(function(s){return s.featured;}) || allStories[0];
+    const sideStories = allStories.filter(function(s){return s!==featured;}).slice(0,3);
+
+    if(featured){
+      var fc=document.getElementById('featCat'); if(fc) fc.textContent=featured.category;
+      var ft=document.getElementById('featTitle'); if(ft) ft.textContent=featured.headline;
+      var fm=document.getElementById('featMeta'); if(fm) fm.innerHTML='Signal Times Editorial &nbsp;·&nbsp; '+(news.date||dt.short);
+    }
+    sideStories.forEach(function(s,i){
+      var cat=document.getElementById('cat'+i); if(cat) cat.textContent=s.category;
+      var ttl=document.getElementById('title'+i); if(ttl) ttl.textContent=s.headline;
+      var meta=document.getElementById('meta'+i); if(meta) meta.textContent=s.timestamp||dt.short;
+    });
+    var heroItems=document.querySelectorAll('.hero-news-item');
+    var heroData=news.heroItems||allStories.slice(0,3);
+    heroData.forEach(function(item,i){
+      if(!heroItems[i]) return;
+      var cat=heroItems[i].querySelector('.hni-cat'); if(cat) cat.textContent=item.category;
+      var ttl=heroItems[i].querySelector('.hni-title'); if(ttl) ttl.textContent=item.headline;
+    });
+    var tickerItems=news.ticker||allStories.slice(0,6).map(function(s){return s.headline;});
+    var tickerEl=document.querySelector('.ticker-inner');
+    if(tickerEl && tickerItems.length){
+      var doubled=[].concat(tickerItems,tickerItems);
+      tickerEl.innerHTML=doubled.map(function(t){return '<span>'+t+'</span>';}).join('');
+    }
+    if(news.breaking && news.breaking.length>0) showBreakingBanner(news.breaking[0]);
+    window.stArticles = allStories.map(function(s){return {category:s.category||'World',headline:s.headline||'',date:s.timestamp||news.date||dt.short,summary:s.summary||''};});
+    updateNewsImages(window.stArticles);
+    bindNewsClicks();
+    buildNewsGrid(allStories, news.date||dt.short);
+  }
+
+  injectNews(news);
+
+  // ── BREAKING BANNER ──
+  function showBreakingBanner(story) {
+    if(document.getElementById('breakingBanner')) return;
+    var banner=document.createElement('div');
+    banner.id='breakingBanner';
+    banner.style.cssText='position:fixed;bottom:0;left:0;right:0;z-index:1500;background:#C8102E;padding:12px 24px;display:flex;align-items:center;gap:16px;font-family:\'Barlow Condensed\',sans-serif;';
+    banner.innerHTML='<span style="background:rgba(0,0,0,0.25);padding:4px 12px;font-size:10px;font-weight:800;letter-spacing:0.4em;text-transform:uppercase;color:#fff;white-space:nowrap;">🔴 BREAKING</span><span style="font-size:14px;font-weight:600;letter-spacing:0.05em;color:#fff;flex:1;">'+story.headline+'</span><button onclick="this.parentElement.remove()" style="background:none;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);font-family:\'Barlow Condensed\',sans-serif;font-size:11px;letter-spacing:0.2em;padding:5px 14px;cursor:none;white-space:nowrap;">Dismiss</button>';
+    document.body.appendChild(banner);
+  }
+
+  // ── FULL NEWS GRID ──
+  function buildNewsGrid(stories, dateLabel) {
+    var newsSection=document.getElementById('news');
+    if(!newsSection) return;
+    var grid=document.getElementById('fullNewsGrid');
+    if(!grid){ grid=document.createElement('div'); grid.id='fullNewsGrid'; grid.style.cssText='margin-top:2px;'; newsSection.appendChild(grid); }
+    var remaining=stories.slice(4);
+    if(remaining.length===0) return;
+    grid.innerHTML='<div style="padding:36px 48px 8px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #1e1e1e;"><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.5em;text-transform:uppercase;color:#C8102E;">More Stories — '+dateLabel+'</div><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#444;">'+stories.length+' Stories Today</div></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2px;padding:0 0 2px 0;">'+remaining.map(function(s,i){return '<div class="news-card" id="extcard'+i+'" style="cursor:none;position:relative;overflow:hidden;min-height:160px;"><img src="'+getImg(s.category)+'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.07;pointer-events:none;"><div style="position:relative;z-index:1;padding:4px 0;">'+(s.isBreaking?'<span style="display:inline-block;font-family:\'Barlow Condensed\',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;color:#fff;background:#C8102E;padding:3px 10px;margin-bottom:10px;">BREAKING</span>':'')+'<div class="news-card-cat">'+s.category+'</div><div class="news-card-title">'+s.headline+'</div>'+(s.summary?'<div style="font-size:12px;line-height:1.6;color:#555;margin-top:8px;">'+s.summary+'</div>':'')+'</div><div class="news-card-meta">'+(s.timestamp||dateLabel)+'</div></div>';}).join('')+'</div>';
+    remaining.forEach(function(s,i){
+      var card=document.getElementById('extcard'+i);
+      if(card){ var artIdx=window.stArticles.findIndex(function(a){return a.headline===s.headline;}); if(artIdx>=0) card.onclick=function(){openArticle(artIdx);}; }
+    });
+  }
+
+  // ── POLL FOR BREAKING NEWS every 5 min ──
+  var knownHeadlines=new Set((news.breaking||[]).map(function(s){return s.headline;}));
+  setInterval(async function(){
+    try {
+      var resp=await fetch('/.netlify/functions/get-news?date='+dt.ymd+'&t='+Date.now());
+      if(!resp.ok) return;
+      var fresh=await resp.json();
+      if(!fresh.breaking?.length) return;
+      var newOnes=fresh.breaking.filter(function(s){return !knownHeadlines.has(s.headline);});
+      if(newOnes.length===0) return;
+      newOnes.forEach(function(s){knownHeadlines.add(s.headline);});
+      var existing=document.getElementById('breakingBanner'); if(existing) existing.remove();
+      showBreakingBanner(newOnes[0]);
+      var tickerEl=document.querySelector('.ticker-inner');
+      if(tickerEl){ var sp=document.createElement('span'); sp.style.cssText='color:#fff;font-weight:700;'; sp.textContent='🔴 BREAKING: '+newOnes[0].headline; tickerEl.prepend(sp.cloneNode(true)); tickerEl.prepend(sp); }
+    } catch(e){}
+  }, 5*60*1000);
+
+})();
+
+// Static fallback while live news loads
+window.stArticles = [
+  { category:'World',       headline:'Trump and Xi Open Beijing Summit as Taiwan Takes Centre Stage',               date:'May 15, 2026' },
+  { category:'Europe',      headline:'Russia Launches Mass Drone and Missile Strike on Kyiv',                       date:'May 15, 2026' },
+  { category:'Middle East', headline:'Lebanon and Israel Hold Direct Talks in Washington',                           date:'May 15, 2026' },
+  { category:'Africa',      headline:'HRW: M23 Rebels Carried Out Mass Atrocities During Occupation of Eastern DRC', date:'May 15, 2026' },
+];
+</script>
+</body>
+</html>
